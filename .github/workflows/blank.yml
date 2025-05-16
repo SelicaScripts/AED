@@ -1,0 +1,92 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# WebSim “Game Designer” Agent Configuration
+# ──────────────────────────────────────────────────────────────────────────────
+
+# 1. Task Definition
+task_name:      "WebSim Game Designer Agent"
+description:    |
+  Use AlphaEvolve within WebSim as an autonomous Game Designer.
+  Continuously generate, evaluate, and refine your game’s:
+    – Core loops (combat, progression, resource management)  
+    – Level layouts and world structure  
+    – Difficulty curves and balance parameters  
+    – Narrative beats and dialogue trees  
+    – UI/UX flows and art/style configurations  
+  Optimize for player engagement, retention, completion rate, “fun,”
+  and coherence metrics with minimal manual intervention.
+
+# 2. Repository & Design Blocks
+code_repo:      "https://github.com/your-org/your-game"
+design_markers:
+  start: "// DESIGN-BLOCK-START"
+  end:   "// DESIGN-BLOCK-END"
+  # Wrap any JSON, script, config or code sections you want evolved.
+
+# 3. Automated Playtest & Metrics
+evaluation:
+  script:       "simulate.py"
+  metrics:
+    - engagement_time
+    - retention_rate
+    - completion_rate
+    - difficulty_variance
+    - player_deaths
+    - narrative_coherence
+    - art_consistency
+    - ui_usability
+    - fun_score
+  maximize:
+    - engagement_time
+    - retention_rate
+    - completion_rate
+    - fun_score
+    - narrative_coherence
+    - art_consistency
+    - ui_usability
+  minimize:
+    - difficulty_variance
+    - player_deaths
+  # simulate.py must run headless playtests and emit JSON metrics.
+
+# 4. Evolution Parameters
+population_size:     25
+selection_top_k:     5
+mutation_rate:       0.2
+crossover:           true
+compute_budget:
+  max_generations:    300
+  parallel_workers:   4
+
+# 5. LLM Ensemble & Prompting
+llm_ensemble:
+  - model: "gemini-2.0-flash"
+    weight: 0.7
+  - model: "gpt-4-turbo"
+    weight: 0.3
+
+prompt_template: |
+  You are an autonomous Game Designer Agent.
+  Each generation:
+    1) Pick parents from archive.
+    2) For every DESIGN-BLOCK-START…-END, propose a diff:
+       <<<<<<< SEARCH
+       <original>
+       =======
+       <improved>
+       >>>>>>> REPLACE
+    3) Ensure the game builds and simulate.py runs without errors.
+    4) Return only the diffs.
+
+# 6. Reporting & Auto-Approval
+report_interval:     5       # summary every 5 generations
+auto_approve:        true    # merge any design that beats baseline
+on_failure:          "rollback_and_notify"
+
+# 7. Logging & Notifications
+logging:
+  level:        INFO
+  output_dir:   "./websim_game_designer_logs"
+notifications:
+  on_best_improvement: "slack"
+  on_error:            "email"
+# ──────────────────────────────────────────────────────────────────────────────
