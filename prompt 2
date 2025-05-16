@@ -1,0 +1,97 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# WebSim / AlphaEvolve Configuration for Autonomous Game Design Evolution
+# ──────────────────────────────────────────────────────────────────────────────
+
+# 1. Task Definition
+task_name:      "Autonomous Game Designer Evolution"
+description:    |
+  Leverage AlphaEvolve as a perpetual Game Designer Agent. It will
+  evolve and refine core gameplay loops, level layouts, difficulty
+  curves, narrative beats, art/style parameters, and UX flows—
+  optimizing for player engagement, retention, balance, and “fun” metrics.
+
+# 2. Code & Design Markers
+code_repo:      "https://github.com/your-org/your-game-project"
+design_markers:
+  start: "// DESIGN-BLOCK-START"
+  end:   "// DESIGN-BLOCK-END"
+  # Surround scripts, config files, or JSON/markup sections you
+  # want the agent to tweak (e.g., level definitions, AI parameters,
+  # UI layouts, dialogue trees).
+
+# 3. Automated Playtest & Evaluation
+#    Supply simulate.py that:
+#      • Runs headless playtests (AI or scripted bots)
+#      • Measures: engagement_time, retention_rate, difficulty_variance,
+#        player_deaths, completion_rate, narrative_coherence_score,
+#        art_style_consistency, UI_usability_score, fun_score (crowd-sourced)
+evaluation:
+  script:       "simulate.py"
+  metrics:
+    - engagement_time
+    - retention_rate
+    - difficulty_variance
+    - completion_rate
+    - player_deaths
+    - narrative_coherence_score
+    - art_style_consistency
+    - ui_usability_score
+    - fun_score
+  maximize:
+    - engagement_time
+    - retention_rate
+    - completion_rate
+    - fun_score
+    - narrative_coherence_score
+    - art_style_consistency
+    - ui_usability_score
+  minimize:
+    - difficulty_variance
+    - player_deaths
+
+# 4. Evolutionary Parameters
+population_size:     30      # candidate game designs per generation
+selection_top_k:     7       # keep top-7 designs
+mutation_rate:       0.25    # tweak degree per DESIGN-BLOCK
+crossover:           true    # mix two parent designs
+compute_budget:
+  max_generations:    500
+  parallel_workers:   6
+
+# 5. LLM Designer Ensemble
+llm_ensemble:
+  - model: "gemini-2.0-flash"
+    weight: 0.6
+  - model: "gpt-4-turbo"
+    weight: 0.4
+
+prompt_template: |
+  You are an autonomous Game Designer Agent. Your goal is to
+  iteratively propose focused tweaks to each DESIGN-BLOCK so as to
+  improve these key metrics: {{metrics}}.
+
+  For each generation:
+  1) Select parent designs from archive.
+  2) For each DESIGN-BLOCK-START…-END, output a diff:
+     <<<<<<< SEARCH
+     <original content>
+     =======
+     <revised content>
+     >>>>>>> REPLACE
+  3) Ensure that game builds, simulate.py runs without errors, and playtests complete.
+  4) Return only diffs.
+
+# 6. Reporting & Approval
+report_interval:     5       # summary every 5 generations
+auto_approve:        true    # auto-merge any design that beats baseline
+on_failure:          "rollback_and_notify"
+
+# 7. Monitoring & Notifications
+logging:
+  level:        DEBUG
+  output_dir:   "./design_evolution_logs"
+notifications:
+  on_best_improvement: "slack"
+  on_error:            "email"
+
+# ──────────────────────────────────────────────────────────────────────────────
