@@ -1,0 +1,77 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# WebSim / AlphaEvolve Configuration for Continuous Autonomous Improvement
+# ──────────────────────────────────────────────────────────────────────────────
+
+# 1. Problem Definition
+task_name:      "Autonomous Evolution of My App/Game"
+description:    |
+  Use AlphaEvolve to continuously improve my web apps and games —
+  optimizing for performance, size, maintainability, and UX metrics —
+  with virtually no manual input once the pipeline is running.
+
+# 2. Initial Code & Evolution Blocks
+code_repo:      "https://github.com/your-org/your-app-or-game"
+evolve_markers:                            # Mark the code you want AlphaEvolve to evolve
+  start: "# EVOLVE-BLOCK-START"
+  end:   "# EVOLVE-BLOCK-END"
+
+# 3. Automated Evaluation Function
+#    You must supply a script evaluate.py that:
+#      • Runs your app/game in headless mode or a test harness
+#      • Measures metrics such as FPS, bundle size, memory usage,
+#        load time, code complexity, accessibility score, etc.
+#      • Returns a JSON dict of scalar scores to maximize.
+evaluation:
+  script:       "evaluate.py"
+  metrics:      ["fps", "load_time", "bundle_size", "memory_usage", "accessibility_score"]
+  maximize:     ["fps", "accessibility_score"]
+  minimize:     ["load_time", "bundle_size", "memory_usage"]
+
+# 4. Evolutionary Settings
+population_size:     20      # number of candidate variants per generation
+selection_top_k:     5       # carry forward the top-k by aggregate score
+mutation_rate:       0.3     # chance of each block being modified
+crossover:           true    # allow mixing of two parent solutions
+compute_budget:
+  max_generations:    1000
+  parallel_workers:   4
+
+# 5. LLM Ensemble & Prompting
+#    Uses a mix of high-throughput and high-quality models
+llm_ensemble:
+  - model: "gemini-2.0-flash"
+    weight: 0.7
+  - model: "gemini-2.0-pro"
+    weight: 0.3
+
+prompt_template: |
+  You are an autonomous code evolution agent. Your job is to take the
+  current code, identify EVOLVE-BLOCKS, and propose focused changes
+  that improve the following metrics: {{metrics}}.
+
+  For each generation:
+  1) Sample parent programs from the internal archive.
+  2) For each EVOLVE-BLOCK-START…-END, suggest a SEARCH/REPLACE diff:
+     <<<<<<< SEARCH
+     <original code snippet>
+     =======
+     <your improved code snippet>
+     >>>>>>> REPLACE
+  3) Ensure that all changes compile and that evaluate.py runs without error.
+  4) Return the diffs only.
+
+# 6. Minimal Human Intervention
+report_interval:     10      # after every 10 generations, output a summary
+auto_approve:        true    # apply all diffs that outperform the baseline
+on_failure:          "rollback_and_notify"  
+                            # if evaluation crashes, revert to last stable version
+
+# 7. Runtime & Monitoring
+logging:
+  level:        INFO
+  output_dir:   "./alphaevolve_logs"
+notifications:
+  on_best_improvement: "email" 
+  on_error:            "slack"
+
+# ──────────────────────────────────────────────────────────────────────────────
